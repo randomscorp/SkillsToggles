@@ -10,26 +10,20 @@ using HutongGames.PlayMaker.Actions;
 using ItemChanger;
 using ItemChanger.FsmStateActions;
 using ItemChanger.Extensions;
-
 using SkillsToggles.Toggles;
+using SkillsToggles.BaseClasses;
+
+
 namespace SkillsToggles
 {
-    public class SkillsToggles : Mod
+    public class SkillsToggles : Mod, IGlobalSettings<GlobalSettings>
     {
         internal static SkillsToggles Instance ;
 
-        //public override List<ValueTuple<string, string>> GetPreloadNames()
-        //{
-        //    return new List<ValueTuple<string, string>>
-        //    {
-        //        new ValueTuple<string, string>("White_Palace_18", "White Palace Fly")
-        //    };
-        //}
+        public static GlobalSettings GS = new();
+        public void OnLoadGlobal(GlobalSettings gs) => GS = gs;
+        public GlobalSettings OnSaveGlobal() => GS;
 
-        //public SkillsToggles() : base("SkillsToggles")
-        //{
-        //    Instance = this;
-        //}
 
         public override void Initialize(Dictionary<string, Dictionary<string, GameObject>> preloadedObjects)
         {
@@ -43,45 +37,56 @@ namespace SkillsToggles
         }
 
 
-
         private void Hooks()
         {
+            On.PlayerData.SetBool += SetGS;
+
+             Dictionary<string, InvItem> items = new()
+            {
+                { "Claw", new("2", "Walljump", nameof(PlayerData.hasWalljump)) },
+                { "Ismas", new("5", "Acid Armour", nameof(PlayerData.hasAcidArmour)) },
+                { "Lantern", new("6", "Lantern", nameof(PlayerData.hasLantern)) },
+                { "Cdash", new("3", "Super Dash", nameof(PlayerData.hasSuperDash)) },
+                { "Wings", new("4", "Double Jump", nameof(PlayerData.hasDoubleJump)) },
+            };
 
 
             Events.AddFsmEdit(new("Inv", "UI Inventory"), new Nail().Change);
             Events.AddFsmEdit(new("Inv", "UI Inventory"), new FireBall().Change);
             Events.AddFsmEdit(new("Inv", "UI Inventory"), new Dive().Change);
             Events.AddFsmEdit(new("Inv", "UI Inventory"), new Wraiths().Change);
+            Events.AddFsmEdit(new("Inv", "UI Inventory"), new DreamGate().Change);
             Events.AddFsmEdit(new("Inv", "UI Inventory"), new DreamNail().Change);
             Events.AddFsmEdit(new("Inv", "UI Inventory"), new Dash().Change);
-            Events.AddFsmEdit(new("Inv", "UI Inventory"), new Claw().Change);
-            Events.AddFsmEdit(new("Inv", "UI Inventory"), new SuperDash().Change);
-            Events.AddFsmEdit(new("Inv", "UI Inventory"), new Wings().Change);
-            Events.AddFsmEdit(new("Inv", "UI Inventory"), new Ismas().Change);
-            Events.AddFsmEdit(new("Inv", "UI Inventory"), new Lantern().Change);
-            Events.AddFsmEdit(new("Inv", "UI Inventory"), new DreamGate().Change);
+
+            foreach(InvItem item in items.Values)
+            {
+                Events.AddFsmEdit(new("Inv", "UI Inventory"), item.Change);
+
+            }
 
 
-
-
-
-
-
-
-
-            On.HeroController.Start += HeroController_Start;
 
         }
 
-        private void HeroController_Start(On.HeroController.orig_Start orig, HeroController self)
+        private void SetGS(On.PlayerData.orig_SetBool orig, PlayerData self, string boolName, bool value)
         {
-            PlayerData.instance.SetBool(nameof(PlayerData.visitedDirtmouth), true);
-            orig(self);
+
+            foreach (var control in typeof(GlobalSettings).GetProperties())
+            {
+                Modding.Logger.Log("name: "+boolName +"  " + control.Name);
+                Modding.Logger.Log("isasdasdasdas: " + nameof(boolName) == nameof(control.Name));
+               // Modding.Logger.Log("value ="+value);
+
+                if ((boolName.ToString() == control.Name.ToString()) && value==true)
+                {
+                    Modding.Logger.Log("oi");
+                    control.SetValue(GS,value);
+                }
+            }
+            orig(self, boolName, value);
+
         }
-
-
-       
-
     }
 
 }

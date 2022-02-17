@@ -32,10 +32,6 @@ namespace SkillsToggles.Toggles
 
             GameObject trinkets = fsm.FsmVariables.GetFsmGameObject("Equip Item 5").Value;
 
-            foreach (Component component in trinkets.GetComponents<Component>())
-            {
-                Modding.Logger.Log(component);
-            }
         }
 
         public override void Upgrade(PlayMakerFSM fsm)
