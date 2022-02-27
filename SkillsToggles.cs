@@ -39,9 +39,10 @@ namespace SkillsToggles
 
         private void Hooks()
         {
-            On.PlayerData.SetBool += SetGS;
+            //On.PlayerData.SetBool += SetGS;
+            ModHooks.GetPlayerBoolHook += getBools;
 
-             Dictionary<string, InvItem> items = new()
+            Dictionary<string, InvItem> items = new()
             {
                 { "Claw", new("2", "Walljump", nameof(PlayerData.hasWalljump)) },
                 { "Ismas", new("5", "Acid Armour", nameof(PlayerData.hasAcidArmour)) },
@@ -62,31 +63,18 @@ namespace SkillsToggles
             foreach(InvItem item in items.Values)
             {
                 Events.AddFsmEdit(new("Inv", "UI Inventory"), item.Change);
-
             }
 
 
 
         }
 
-        private void SetGS(On.PlayerData.orig_SetBool orig, PlayerData self, string boolName, bool value)
+        private bool getBools(string name, bool orig)
         {
 
-            foreach (var control in typeof(GlobalSettings).GetProperties())
-            {
-                Modding.Logger.Log("name: "+boolName +"  " + control.Name);
-                Modding.Logger.Log("isasdasdasdas: " + nameof(boolName) == nameof(control.Name));
-               // Modding.Logger.Log("value ="+value);
-
-                if ((boolName.ToString() == control.Name.ToString()) && value==true)
-                {
-                    Modding.Logger.Log("oi");
-                    control.SetValue(GS,value);
-                }
-            }
-            orig(self, boolName, value);
-
+            return (GS.has_Bools.ContainsKey(name) ? GS.has_Bools[name] && orig  : orig) ;
         }
+
+    }
     }
 
-}

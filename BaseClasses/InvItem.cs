@@ -28,9 +28,6 @@ namespace SkillsToggles.BaseClasses
             .GetState(equipmentStateName).RemoveAction(0);
 
 
-            //fsm.FsmVariables.GetFsmGameObject(fsmStateName).Value.GetComponent<SpriteRenderer>().color =
-               // PlayerData.instance.GetBool(playerDataName) ? Color.white : Color.gray;
-
             //Add the change action in the Inv fsm
             fsm.GetState(fsmStateName).AddLastAction(new LambdaEveryFrame(ListenForNailPress));
 
@@ -47,21 +44,9 @@ namespace SkillsToggles.BaseClasses
                 
                 if (InputHandler.Instance.inputActions.attack.WasPressed)
                 {
-                    var maxGS = typeof(GlobalSettings).GetProperty(playerDataName).GetValue(SkillsToggles.GS);
-                    bool control = PlayerData.instance.GetBool(playerDataName);
-                    //Enabled State
-                    if (!control && (bool)maxGS)
-                    {
-                        PlayerData.instance.SetBool(playerDataName, true);
-                        fsm.FsmVariables.GetFsmGameObject(fsmStateName).Value.GetComponent<SpriteRenderer>().color = Color.white;
-                    }
-                    //Disabled state
-                    else
-                    {
-                        PlayerData.instance.SetBool(playerDataName, false);
-                        fsm.FsmVariables.GetFsmGameObject(fsmStateName).Value.GetComponent<SpriteRenderer>().color = Color.gray;
-                    }
-
+                    SkillsToggles.GS.has_Bools[playerDataName]=!SkillsToggles.GS.has_Bools[playerDataName];
+                    fsm.FsmVariables.GetFsmGameObject(fsmStateName).Value.GetComponent<SpriteRenderer>().color = PlayerData.instance.GetBool(playerDataName) ? Color.white : Color.gray;
+                    
                 }
 
             }
