@@ -11,8 +11,7 @@ using ItemChanger.Extensions;
 
 using HutongGames.PlayMaker;
 
-
-namespace SkillsToggles.Toggles
+namespace SkillsToggles.BaseClasses
 {
     public  class Nail : BaseToggle
     {
@@ -22,7 +21,7 @@ namespace SkillsToggles.Toggles
 
         public override void Update(PlayMakerFSM fsm)
         {
-            int nailsmithUpgrades = 1 + PlayerData.instance.GetInt(nameof(PlayerData.nailSmithUpgrades));
+            int nailsmithUpgrades = 1 + SkillsToggles.GS.has_Ints[nameof(PlayerData.nailSmithUpgrades)];
             PlayMakerFSM updateText = fsm.gameObject.LocateMyFSM("Update Text");
             updateText.FsmVariables.GetFsmString("Convo Name").Value = "INV_NAME_NAIL" + nailsmithUpgrades;
             updateText.FsmVariables.GetFsmString("Convo Desc").Value = "INV_DESC_NAIL" + nailsmithUpgrades;
@@ -38,15 +37,16 @@ namespace SkillsToggles.Toggles
         {
             PlayerData.instance.SetBool(nameof(PlayerData.honedNail), true);
 
-            if (PlayerData.instance.GetInt(nameof(PlayerData.nailSmithUpgrades)) < 4)
+            if (SkillsToggles.GS.has_Ints[nameof(PlayerData.nailSmithUpgrades)] < PlayerData.instance.nailSmithUpgrades)
             {
-                PlayerData.instance.IntAdd(nameof(PlayerData.nailDamage), 4);
-                PlayerData.instance.IncrementInt(nameof(PlayerData.nailSmithUpgrades));
+                SkillsToggles.GS.has_Ints[nameof(PlayerData.nailDamage)] += 4;
+                SkillsToggles.GS.has_Ints[nameof(PlayerData.nailSmithUpgrades)] += 1;
+                
             }
             else
             {
-                PlayerData.instance.SetInt(nameof(PlayerData.nailDamage), 5);
-                PlayerData.instance.SetInt(nameof(PlayerData.nailSmithUpgrades), 0);
+                SkillsToggles.GS.has_Ints[nameof(PlayerData.nailDamage)] = 5;
+                SkillsToggles.GS.has_Ints[nameof(PlayerData.nailSmithUpgrades)] = 0;
             }
             PlayMakerFSM.BroadcastEvent("UPDATE NAIL DAMAGE");
         }

@@ -10,14 +10,14 @@ using HutongGames.PlayMaker.Actions;
 using ItemChanger;
 using ItemChanger.FsmStateActions;
 using ItemChanger.Extensions;
-using SkillsToggles.Toggles;
 using SkillsToggles.BaseClasses;
-
+using SkillsToggles.Toggles;
 
 namespace SkillsToggles
 {
     public class SkillsToggles : Mod, IGlobalSettings<GlobalSettings>
     {
+
         internal static SkillsToggles Instance ;
 
         public static GlobalSettings GS = new();
@@ -39,34 +39,65 @@ namespace SkillsToggles
 
         private void Hooks()
         {
-            //On.PlayerData.SetBool += SetGS;
             ModHooks.GetPlayerBoolHook += getBools;
+            ModHooks.GetPlayerIntHook += getInt;
+            On.HeroController.Start += HeroController_Start;
 
-            Dictionary<string, InvItem> items = new()
+
+            
+
+
+
+            //Patch wraiths menu
+
+
+
+        }
+
+        private void HeroController_Start(On.HeroController.orig_Start orig, HeroController self)
+        {
+            Events.AddFsmEdit(new("Inv", "UI Inventory"), PatchWraiths);
+            void PatchWraiths(PlayMakerFSM fsm)
             {
-                { "Claw", new("2", "Walljump", nameof(PlayerData.hasWalljump)) },
-                { "Ismas", new("5", "Acid Armour", nameof(PlayerData.hasAcidArmour)) },
-                { "Lantern", new("6", "Lantern", nameof(PlayerData.hasLantern)) },
-                { "Cdash", new("3", "Super Dash", nameof(PlayerData.hasSuperDash)) },
-                { "Wings", new("4", "Double Jump", nameof(PlayerData.hasDoubleJump)) },
-            };
 
-
-            Events.AddFsmEdit(new("Inv", "UI Inventory"), new Nail().Change);
-            Events.AddFsmEdit(new("Inv", "UI Inventory"), new FireBall().Change);
-            Events.AddFsmEdit(new("Inv", "UI Inventory"), new Dive().Change);
-            Events.AddFsmEdit(new("Inv", "UI Inventory"), new Wraiths().Change);
-            Events.AddFsmEdit(new("Inv", "UI Inventory"), new DreamGate().Change);
-            Events.AddFsmEdit(new("Inv", "UI Inventory"), new DreamNail().Change);
-            Events.AddFsmEdit(new("Inv", "UI Inventory"), new Dash().Change);
-
-            foreach(InvItem item in items.Values)
-            {
-                Events.AddFsmEdit(new("Inv", "UI Inventory"), item.Change);
+                fsm.GetState("Choice 15").RemoveAction(-1);
+                fsm.GetState("Choice 15").AddLastAction(new Lambda(() => fsm.SendEvent("OPT D")));
             }
 
 
+            Dictionary<string, Toggle> items = new()
+            {
+                { "Claw", new InvItem("2", "Walljump", nameof(PlayerData.hasWalljump)) },
+                { "Ismas", new InvItem("5", "Acid Armour", nameof(PlayerData.hasAcidArmour)) },
+                { "Lantern", new InvItem("6", "Lantern", nameof(PlayerData.hasLantern)) },
+                { "Cdash", new InvItem("3", "Super Dash", nameof(PlayerData.hasSuperDash)) },
+                { "Wings", new InvItem("4", "Double Jump", nameof(PlayerData.hasDoubleJump)) },
 
+                { "Nail", new Nail() },
+
+                { "Fireball", new Spells("Fireball", nameof(PlayerData.fireballLevel), new() { "Choice 2", "Choice 3" }) },
+                { "Dive", new Spells("Quake", nameof(PlayerData.quakeLevel), new() { "Choice 4", "Choice 11" }) },
+                { "Wraiths", new Spells("Scream", nameof(PlayerData.screamLevel), new() { "Choice 13", "Choice 12" }) },
+
+                { "Dream Nail", new DreamNail() },
+
+                { "Dream Gate", new DreamGate() },
+
+                { "Dash", new Dash() }
+
+
+            };
+
+            PlayMakerFSM fsm = GameObject.Find("_GameCameras").FindChild("HudCamera").FindChild("Inventory").FindChild("Inv").LocateFSM("UI Inventory");
+            foreach (Toggle item in items.Values)
+            {
+                item.Change(fsm);
+            }
+        }
+
+        private int getInt(string name, int orig)
+        {
+            return (GS.has_Ints.ContainsKey(name) ? GS.has_Ints[name] : orig);
         }
 
         private bool getBools(string name, bool orig)

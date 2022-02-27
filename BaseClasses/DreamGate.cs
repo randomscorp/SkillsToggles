@@ -10,6 +10,7 @@ using HutongGames.PlayMaker.Actions;
 using ItemChanger;
 using ItemChanger.FsmStateActions;
 using ItemChanger.Extensions;
+using SkillsToggles.BaseClasses;
 
 
 namespace SkillsToggles.Toggles
@@ -68,13 +69,13 @@ namespace SkillsToggles.Toggles
         {
 
             GameObject dg = fsm.gameObject.transform.Find("Inv_Items").Find("Dream Gate").gameObject;
-            if (!PlayerData.instance.hasDreamGate)
+            if (!SkillsToggles.GS.has_Bools[nameof(PlayerData.instance.hasDreamGate)])
             {
-                PlayerData.instance.SetBool(nameof(PlayerData.hasDreamGate), true);
+                SkillsToggles.GS.has_Bools[nameof(PlayerData.hasDreamGate)] = true;
                 dg.gameObject.GetComponent<SpriteRenderer>().enabled = true;
-                if (PlayerData.instance.hasDreamNail)
+                if (SkillsToggles.GS.has_Bools[nameof(PlayerData.instance.hasDreamNail)])
                 {
-                    PlayerData.instance.SetBool(nameof(PlayerData.hasDreamNail), true);
+                    SkillsToggles.GS.has_Bools[nameof(PlayerData.hasDreamNail)] = true;
                     GameObject dn = fsm.gameObject.transform.Find("Inv_Items").Find("Dream Nail").gameObject;
                     dn.gameObject.GetComponent<SpriteRenderer>().enabled = true;
 
@@ -84,7 +85,7 @@ namespace SkillsToggles.Toggles
 
             else
             {
-                PlayerData.instance.SetBool(nameof(PlayerData.hasDreamGate), false);
+                SkillsToggles.GS.has_Bools[nameof(PlayerData.hasDreamGate)]= false;
                 dg.gameObject.GetComponent<SpriteRenderer>().enabled = false;
 
 

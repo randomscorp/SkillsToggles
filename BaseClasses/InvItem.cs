@@ -19,7 +19,7 @@ namespace SkillsToggles.BaseClasses
         }
 
 
-        public override void Change(PlayMakerFSM fsm)
+        public void Change(PlayMakerFSM fsm)
         {
             string fsmStateName = $"Equip Item {equipNamePosition}";
             //Remove the Bool check on the Inventory equip items init

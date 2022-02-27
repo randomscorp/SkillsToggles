@@ -10,6 +10,7 @@ using HutongGames.PlayMaker.Actions;
 using ItemChanger;
 using ItemChanger.FsmStateActions;
 using ItemChanger.Extensions;
+using SkillsToggles.BaseClasses;
 
 
 namespace SkillsToggles.Toggles

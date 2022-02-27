@@ -8,15 +8,14 @@ using UnityEngine;
 using ItemChanger;
 using ItemChanger.FsmStateActions;
 using ItemChanger.Extensions;
-
+using SkillsToggles.BaseClasses;
 using Modding;
 
 
-namespace SkillsToggles.Toggles
+namespace SkillsToggles.BaseClasses
 {
-    public  abstract class BaseToggle
+    public  abstract class BaseToggle: Toggle
     {
-        //public string state => this.GetType().Name;
 
         public abstract string fsmStateName { get;}
         public abstract Dictionary<string,string> ChoicesOptions { get; } 
@@ -24,17 +23,20 @@ namespace SkillsToggles.Toggles
 
         public virtual void Change(PlayMakerFSM fsm)
         {
-
             if (ChoicesOptions != null)
             {
-
                 foreach (KeyValuePair<string, string> choice in ChoicesOptions)
                 {
                     fsm.GetState(choice.Key).AddFirstAction(new Lambda(() => fsm.SendEvent(choice.Value)));
                 }
             }
+            try
+            {
+                fsm.GetState(fsmStateName).AddLastAction(new LambdaEveryFrame(ListenForNailPress));
 
-            fsm.GetState(fsmStateName).AddLastAction(new LambdaEveryFrame(ListenForNailPress));
+            }
+            catch { }
+            
             void ListenForNailPress()
             {
                 Config(fsm);
@@ -43,16 +45,9 @@ namespace SkillsToggles.Toggles
                     Upgrade(fsm);
                     Update(fsm);
                 }
-
             }
 
-
-
-
-
         }
-
-
         public abstract void Upgrade(PlayMakerFSM fsm);
         public abstract void Update(PlayMakerFSM fsm);
         public virtual void Config(PlayMakerFSM fsm) {

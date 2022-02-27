@@ -10,6 +10,7 @@ using HutongGames.PlayMaker.Actions;
 using ItemChanger;
 using ItemChanger.FsmStateActions;
 using ItemChanger.Extensions;
+using SkillsToggles.BaseClasses;
 
 
 
@@ -60,8 +61,8 @@ namespace SkillsToggles.Toggles
         public override void Update(PlayMakerFSM fsm)
         {
             PlayMakerFSM updateText = fsm.gameObject.LocateMyFSM("Update Text");
-            updateText.FsmVariables.GetFsmString("Convo Desc").Value = "INV_DESC_DREAMNAIL_" + (PlayerData.instance.dreamNailUpgraded ? "B" : "A");
-            updateText.FsmVariables.GetFsmString("Convo Name").Value = "INV_NAME_DREAMNAIL_" + (PlayerData.instance.dreamNailUpgraded ? "B" : "A");
+            updateText.FsmVariables.GetFsmString("Convo Desc").Value = "INV_DESC_DREAMNAIL_" + (SkillsToggles.GS.has_Bools[nameof(PlayerData.dreamNailUpgraded)] ? "B" : "A");
+            updateText.FsmVariables.GetFsmString("Convo Name").Value = "INV_NAME_DREAMNAIL_" + (SkillsToggles.GS.has_Bools[nameof(PlayerData.dreamNailUpgraded)] ? "B" : "A");
             updateText.SendEvent("UPDATE TEXT");
 
             //fsm.SetState(fsmStateName);
@@ -73,35 +74,31 @@ namespace SkillsToggles.Toggles
 
             GameObject dn = fsm.gameObject.transform.Find("Inv_Items").Find("Dream Nail").gameObject;
 
-            foreach (Component component in dn.GetComponents<Component>())
+
+            bool hasDn = SkillsToggles.GS.has_Bools[nameof(PlayerData.instance.hasDreamNail)];
+            bool adn = SkillsToggles.GS.has_Bools[nameof(PlayerData.instance.dreamNailUpgraded)];
+
+
+            if (!hasDn && !adn)
             {
-                Modding.Logger.Log(component);
-            }
-
-            bool hasDn = PlayerData.instance.hasDreamNail;
-            bool adn = PlayerData.instance.dreamNailUpgraded;
-
-            Modding.Logger.Log($"DN: {hasDn}   ADN: {adn}");
-
-            if (!PlayerData.instance.hasDreamNail && !PlayerData.instance.dreamNailUpgraded)
-            {
-                PlayerData.instance.hasDreamNail = true;
+                SkillsToggles.GS.has_Bools[nameof(PlayerData.instance.hasDreamNail)] = true;
                 dn.gameObject.GetComponent<SpriteRenderer>().enabled = true;
                 fsm.gameObject.GetComponentInChildren<InvItemDisplay>().BroadcastMessage("OnEnable");
                 //fsm.GetState("Dream Nail").OnEnter();
                 return;
             }
-            else if (PlayerData.instance.hasDreamNail && !PlayerData.instance.dreamNailUpgraded)
+            else if (hasDn&& !adn)
             {
-                PlayerData.instance.dreamNailUpgraded = true;
+                SkillsToggles.GS.has_Bools[nameof(PlayerData.instance.dreamNailUpgraded)] = true;
                 dn.gameObject.GetComponent<SpriteRenderer>().enabled = true;
                 fsm.gameObject.GetComponentInChildren<InvItemDisplay>().BroadcastMessage("OnEnable");
                 return;
             }
             else
             {
-                PlayerData.instance.hasDreamNail = false;
-                PlayerData.instance.dreamNailUpgraded = false;
+                SkillsToggles.GS.has_Bools[nameof(PlayerData.instance.hasDreamNail)] = false;
+                SkillsToggles.GS.has_Bools[nameof(PlayerData.instance.dreamNailUpgraded)] = false;
+
                 dn.gameObject.GetComponent<SpriteRenderer>().enabled = false;
                 return;
             }

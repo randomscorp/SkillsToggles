@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SkillsToggles.BaseClasses
 {
-    public abstract class Toggle
+    public interface Toggle
     {
         public abstract void Change(PlayMakerFSM fsm);
 

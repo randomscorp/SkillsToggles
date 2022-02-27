@@ -11,6 +11,8 @@ using ItemChanger;
 using ItemChanger.FsmStateActions;
 using ItemChanger.Extensions;
 using TMPro;
+using SkillsToggles.BaseClasses;
+
 
 namespace SkillsToggles.Toggles
 {
