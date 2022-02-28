@@ -1,3 +1,3 @@
 # SkillsToggles
 
-A mod for the game Hollow Knight.
+Allows you to enable/disable directly from your inventory
