@@ -27,6 +27,10 @@ namespace SkillsToggles.BaseClasses
             fsm.gameObject.transform.Find("Equipment").gameObject.LocateMyFSM("Build Equipment List")
             .GetState(equipmentStateName).RemoveAction(0);
 
+            fsm.GetState("Determine Initial").AddFirstAction(new Lambda(()=>
+               fsm.FsmVariables.GetFsmGameObject(fsmStateName).Value.GetComponent<SpriteRenderer>().color = PlayerData.instance.GetBool(playerDataName) ? Color.white : Color.gray
+            
+            ));
 
             //Add the change action in the Inv fsm
             fsm.GetState(fsmStateName).AddLastAction(new LambdaEveryFrame(ListenForNailPress));

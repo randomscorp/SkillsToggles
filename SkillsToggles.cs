@@ -41,21 +41,34 @@ namespace SkillsToggles
         {
             ModHooks.GetPlayerBoolHook += getBools;
             ModHooks.GetPlayerIntHook += getInt;
+            ModHooks.SetPlayerBoolHook += setBool;
+            ModHooks.SetPlayerIntHook += setInt;
+
             On.HeroController.Start += HeroController_Start;
+        }
 
+        private int setInt(string name, int orig)
+        {
+            if (GS.has_Ints.ContainsKey(name))
+            {
+                GS.has_Ints[name] = orig;
+            }
+            return orig;
+        }
 
-            
-
-
-
-            //Patch wraiths menu
-
-
-
+        private bool setBool(string name, bool orig)
+        {
+            if (GS.has_Bools.ContainsKey(name))
+            {
+                GS.has_Bools[name] = orig;
+            }
+            return orig;
         }
 
         private void HeroController_Start(On.HeroController.orig_Start orig, HeroController self)
         {
+
+            //Patch wraiths menu
             Events.AddFsmEdit(new("Inv", "UI Inventory"), PatchWraiths);
             void PatchWraiths(PlayMakerFSM fsm)
             {
