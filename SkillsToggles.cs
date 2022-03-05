@@ -67,6 +67,8 @@ namespace SkillsToggles
 
         private void HeroController_Start(On.HeroController.orig_Start orig, HeroController self)
         {
+            orig(self);
+
 
             //Patch wraiths menu
             Events.AddFsmEdit(new("Inv", "UI Inventory"), PatchWraiths);
@@ -101,11 +103,17 @@ namespace SkillsToggles
 
             };
 
-            PlayMakerFSM fsm = GameObject.Find("_GameCameras").FindChild("HudCamera").FindChild("Inventory").FindChild("Inv").LocateFSM("UI Inventory");
+            PlayMakerFSM fsm = GameObject.Find("_GameCameras").FindChild("HudCamera")
+                .FindChild("Inventory")
+                .FindChild("Inv")
+                .LocateFSM("UI Inventory");
+
             foreach (Toggle item in items.Values)
             {
                 item.Change(fsm);
             }
+
+
         }
 
         private int getInt(string name, int orig)

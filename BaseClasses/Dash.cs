@@ -12,6 +12,7 @@ using ItemChanger.FsmStateActions;
 using ItemChanger.Extensions;
 using TMPro;
 using SkillsToggles.BaseClasses;
+using Logger = Modding.Logger;
 
 namespace SkillsToggles.Toggles
 {
@@ -46,29 +47,32 @@ namespace SkillsToggles.Toggles
 
         public override void Upgrade(PlayMakerFSM fsm)
         {
-            if(!SkillsToggles.GS.has_Bools[nameof(PlayerData.instance.hasDash)] && !SkillsToggles.GS.has_Bools[nameof(PlayerData.instance.hasShadowDash)])
+            bool hasDash = SkillsToggles.GS.has_Bools[nameof(PlayerData.instance.hasDash)];
+            bool hasShadow = SkillsToggles.GS.has_Bools[nameof(PlayerData.instance.hasShadowDash)];
+            if (!hasDash && !hasShadow)
             {
                 SkillsToggles.GS.has_Bools[nameof(PlayerData.hasDash)]= true;
-                SkillsToggles.GS.has_Bools[nameof(PlayerData.canDash)]= true;
+                PlayerData.instance.canDash= true;
                 fsm.FsmVariables.GetFsmGameObject(fsmStateName).Value.GetComponent<SpriteRenderer>().color = Color.white;
 
             }
 
-            else if (SkillsToggles.GS.has_Bools[nameof(PlayerData.instance.hasDash)] && !SkillsToggles.GS.has_Bools[nameof(PlayerData.instance.hasShadowDash)])
+            else if (hasDash && !hasShadow)
             {
 
                 SkillsToggles.GS.has_Bools[nameof(PlayerData.hasShadowDash)]= true;
-                SkillsToggles.GS.has_Bools[nameof(PlayerData.canShadowDash)]= true;
+                PlayerData.instance.canShadowDash= true;
                 fsm.FsmVariables.GetFsmGameObject(fsmStateName).Value.GetComponent<SpriteRenderer>().color = Color.white;
 
             }
             else
             {
+
                 SkillsToggles.GS.has_Bools[nameof(PlayerData.hasDash)] = false;
-                SkillsToggles.GS.has_Bools[nameof(PlayerData.canDash)] = false;
+                PlayerData.instance.canDash = false;
 
                 SkillsToggles.GS.has_Bools[nameof(PlayerData.hasShadowDash)] = false;
-                SkillsToggles.GS.has_Bools[nameof(PlayerData.canShadowDash)] = false;
+                PlayerData.instance.canShadowDash = false;
 
                 fsm.FsmVariables.GetFsmGameObject(fsmStateName).Value.GetComponent<SpriteRenderer>().color = Color.gray;
 

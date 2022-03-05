@@ -20,6 +20,8 @@ namespace SkillsToggles
             { nameof(PlayerData.hasDreamNail),false },
             { nameof(PlayerData.dreamNailUpgraded),false },
             { nameof(PlayerData.hasDreamGate), false },
+            { nameof(PlayerData.hasDash),false},
+            { nameof(PlayerData),false},
 
 
         };
