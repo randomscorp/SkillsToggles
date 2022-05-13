@@ -2,7 +2,7 @@
 using ItemChanger.FsmStateActions;
 using ItemChanger.Extensions;
 using SkillsToggles;
-
+using TMPro;
 namespace SkillsToggles.BaseClasses
 {
     public class InvItem:Toggle
@@ -10,7 +10,7 @@ namespace SkillsToggles.BaseClasses
         private string equipNamePosition;
         private string equipmentStateName;
         private string playerDataName;
-
+        private string itemName=null;
         public InvItem(string equipNamePosition, string equipmentStateName, string playerDataName)
         {
             this.equipNamePosition = equipNamePosition;
@@ -19,8 +19,10 @@ namespace SkillsToggles.BaseClasses
         }
 
 
-        public void Change(PlayMakerFSM fsm)
+        public void Change(string name, PlayMakerFSM  fsm)
         {
+
+
             string fsmStateName = $"Equip Item {equipNamePosition}";
             //Remove the Bool check on the Inventory equip items init
             // Items are always in the inventory 
@@ -35,17 +37,29 @@ namespace SkillsToggles.BaseClasses
             //Add the change action in the Inv fsm
             fsm.GetState(fsmStateName).AddLastAction(new LambdaEveryFrame(ListenForNailPress));
 
+            this.itemName = name;
 
 
             void ListenForNailPress()
             {
 
                 #region Update Text
+
                 PlayMakerFSM updateText = fsm.gameObject.LocateMyFSM("Update Text");
                 GameObject text = updateText.FsmVariables.GetFsmGameObject("Text Name").Value;
-                updateText.SendEvent("UPDATE TEXT");
-                #endregion
                 
+                /*if (this.itemName == null)
+                {
+                    this.itemName = text.GetComponent<TextMeshPro>().text;
+                }*/
+
+                text.GetComponent<TextMeshPro>().SetText(this.itemName +
+                    (PlayerData.instance.GetBool(playerDataName) ? "": " (Disabled)")
+                    );
+                updateText.SendEvent("UPDATE TEXT");
+
+                #endregion
+
                 if (InputHandler.Instance.inputActions.attack.WasPressed)
                 {
                     SkillsToggles.GS.has_Bools[playerDataName]=!SkillsToggles.GS.has_Bools[playerDataName];

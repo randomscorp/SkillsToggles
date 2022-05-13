@@ -26,7 +26,7 @@ namespace SkillsToggles.Toggles
 
         };
 
-        public override void Change(PlayMakerFSM fsm)
+        public override void Change(string name, PlayMakerFSM fsm)
         {
 
             try
@@ -45,7 +45,7 @@ namespace SkillsToggles.Toggles
             catch { }
             finally
             {
-                base.Change(fsm);
+                base.Change(name,fsm);
             }
         }
 

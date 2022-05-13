@@ -27,7 +27,7 @@ namespace SkillsToggles.BaseClasses
             this.ChoicesOptions = ChoicesOptions;
         }
 
-        public virtual void Change(PlayMakerFSM fsm)
+        public virtual void Change(string name, PlayMakerFSM fsm)
         {
             FsmStateAction[] str = fsm.GetState(fsmStateName).Actions;
             try
@@ -85,6 +85,7 @@ namespace SkillsToggles.BaseClasses
                 active.SetState("Inactive");
                 return;
             }
+
 
             switch (spell)
             {

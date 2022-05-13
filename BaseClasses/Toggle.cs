@@ -8,7 +8,7 @@ namespace SkillsToggles.BaseClasses
 {
     public interface Toggle
     {
-        public abstract void Change(PlayMakerFSM fsm);
+        public abstract void Change(string name, PlayMakerFSM fsm);
 
     }
 }

@@ -25,10 +25,10 @@ namespace SkillsToggles.Toggles
             { "Choice 1", "OPT A" },
         };
 
-        public override void Change(PlayMakerFSM fsm)
+        public override void Change(string name, PlayMakerFSM fsm)
         {
 
-            try { 
+
             
                 FsmStateAction[] str = fsm.GetState(fsmStateName).Actions;
                 fsm.GetState(fsmStateName).Actions = new FsmStateAction[]
@@ -40,16 +40,10 @@ namespace SkillsToggles.Toggles
 
                 GameObject dn = fsm.gameObject.transform.Find("Inv_Items").Find("Dream Nail").gameObject;
                 //GameObject.Destroy(dn.GetComponent<DeactivateIfPlayerdataFalse>());
-                dn.GetComponent<SetPosIfPlayerdataBool>().playerDataBool = nameof(PlayerData.visitedDirtmouth);
-                }
-            catch
-            {
-
-            }
-            finally
-            {
-                base.Change(fsm);
-            }
+                dn.GetComponent<SetPosIfPlayerdataBool>().playerDataBool = nameof(PlayerData.hasMap);
+               
+                base.Change(name,fsm);
+            
         }
 
         public override void Config(PlayMakerFSM fsm)
@@ -76,10 +70,21 @@ namespace SkillsToggles.Toggles
 
 
             bool hasDn = SkillsToggles.GS.has_Bools[nameof(PlayerData.instance.hasDreamNail)];
-            bool adn = SkillsToggles.GS.has_Bools[nameof(PlayerData.instance.dreamNailUpgraded)];
+            bool hasAdn = SkillsToggles.GS.has_Bools[nameof(PlayerData.instance.dreamNailUpgraded)];
 
+            bool internalDN = PlayerData.instance.GetBoolInternal(nameof(PlayerData.instance.hasDreamNail));
+            bool internalADN = PlayerData.instance.GetBoolInternal(nameof(PlayerData.instance.dreamNailUpgraded));
 
-            if (!hasDn && !adn)
+            if (hasDn==internalDN && hasAdn== internalADN )
+            {
+                SkillsToggles.GS.has_Bools[nameof(PlayerData.instance.hasDreamNail)] = false;
+                SkillsToggles.GS.has_Bools[nameof(PlayerData.instance.dreamNailUpgraded)] = false;
+
+                dn.gameObject.GetComponent<SpriteRenderer>().enabled = false;
+                return;
+            }
+
+            if (!hasDn && !hasAdn)
             {
                 SkillsToggles.GS.has_Bools[nameof(PlayerData.instance.hasDreamNail)] = true;
                 dn.gameObject.GetComponent<SpriteRenderer>().enabled = true;
@@ -87,19 +92,11 @@ namespace SkillsToggles.Toggles
                 //fsm.GetState("Dream Nail").OnEnter();
                 return;
             }
-            else if (hasDn&& !adn)
+            else if (hasDn&& !hasAdn)
             {
                 SkillsToggles.GS.has_Bools[nameof(PlayerData.instance.dreamNailUpgraded)] = true;
                 dn.gameObject.GetComponent<SpriteRenderer>().enabled = true;
                 fsm.gameObject.GetComponentInChildren<InvItemDisplay>().BroadcastMessage("OnEnable");
-                return;
-            }
-            else
-            {
-                SkillsToggles.GS.has_Bools[nameof(PlayerData.instance.hasDreamNail)] = false;
-                SkillsToggles.GS.has_Bools[nameof(PlayerData.instance.dreamNailUpgraded)] = false;
-
-                dn.gameObject.GetComponent<SpriteRenderer>().enabled = false;
                 return;
             }
 

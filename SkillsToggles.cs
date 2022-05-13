@@ -15,20 +15,18 @@ using SkillsToggles.Toggles;
 
 namespace SkillsToggles
 {
-    public class SkillsToggles : Mod, IGlobalSettings<GlobalSettings>
+    public class SkillsToggles : Mod
     {
 
         internal static SkillsToggles Instance ;
 
-        public static GlobalSettings GS = new();
-        public void OnLoadGlobal(GlobalSettings gs) => GS = gs;
-        public GlobalSettings OnSaveGlobal() => GS;
+        public static States GS;
 
 
         public override void Initialize(Dictionary<string, Dictionary<string, GameObject>> preloadedObjects)
         {
             Log("Initializing");
-
+            GS = new();
 
             Hooks();
             Instance = this;
@@ -43,8 +41,23 @@ namespace SkillsToggles
             ModHooks.GetPlayerIntHook += getInt;
             ModHooks.SetPlayerBoolHook += setBool;
             ModHooks.SetPlayerIntHook += setInt;
-
+            On.SetPosIfPlayerdataBool.DoCheck += SetPosIfPlayerdataBool_DoCheck;
             On.HeroController.Start += HeroController_Start;
+        }
+
+        private void SetPosIfPlayerdataBool_DoCheck(On.SetPosIfPlayerdataBool.orig_DoCheck orig, SetPosIfPlayerdataBool self)
+        {
+            orig(self);    
+
+            if (self.setX)
+            {
+                self.transform.localPosition = new Vector3(self.XPos, self.transform.localPosition.y, self.transform.localPosition.z);
+            }
+            if (self.setY)
+            {
+                self.transform.localPosition = new Vector3(self.transform.localPosition.x, self.YPos, self.transform.localPosition.z);
+            }
+            
         }
 
         private int setInt(string name, int orig)
@@ -82,11 +95,11 @@ namespace SkillsToggles
 
             Dictionary<string, Toggle> items = new()
             {
-                { "Claw", new InvItem("2", "Walljump", nameof(PlayerData.hasWalljump)) },
-                { "Ismas", new InvItem("5", "Acid Armour", nameof(PlayerData.hasAcidArmour)) },
-                { "Lantern", new InvItem("6", "Lantern", nameof(PlayerData.hasLantern)) },
-                { "Cdash", new InvItem("3", "Super Dash", nameof(PlayerData.hasSuperDash)) },
-                { "Wings", new InvItem("4", "Double Jump", nameof(PlayerData.hasDoubleJump)) },
+                { "Mantis Claw", new InvItem("2", "Walljump", nameof(PlayerData.hasWalljump)) },
+                { "Isma's Tear", new InvItem("5", "Acid Armour", nameof(PlayerData.hasAcidArmour)) },
+                { "Lumafly Lantern", new InvItem("6", "Lantern", nameof(PlayerData.hasLantern)) },
+                { "Crystal Dash", new InvItem("3", "Super Dash", nameof(PlayerData.hasSuperDash)) },
+                { "Monarch Wings", new InvItem("4", "Double Jump", nameof(PlayerData.hasDoubleJump)) },
 
                 { "Nail", new Nail() },
 
@@ -108,9 +121,9 @@ namespace SkillsToggles
                 .FindChild("Inv")
                 .LocateFSM("UI Inventory");
 
-            foreach (Toggle item in items.Values)
+            foreach (KeyValuePair<string,Toggle> item in items)
             {
-                item.Change(fsm);
+                item.Value.Change(item.Key,fsm);
             }
 
 

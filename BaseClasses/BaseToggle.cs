@@ -21,7 +21,7 @@ namespace SkillsToggles.BaseClasses
         public abstract Dictionary<string,string> ChoicesOptions { get; } 
 
 
-        public virtual void Change(PlayMakerFSM fsm)
+        public virtual void Change(string name,  PlayMakerFSM fsm)
         {
             if (ChoicesOptions != null)
             {
